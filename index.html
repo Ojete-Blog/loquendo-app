@@ -1,0 +1,216 @@
+<!doctype html>
+<html lang="es" data-theme="dark">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+  <meta name="color-scheme" content="dark light"/>
+  <meta name="theme-color" content="#0b0f1a"/>
+  <meta name="description" content="PWA gratis para crear voz estilo loquendo, grabarla, montar vídeo con subtítulos y preparar publicación para X sin APIs."/>
+  <meta name="referrer" content="strict-origin-when-cross-origin"/>
+
+  <link rel="manifest" href="./manifest.webmanifest"/>
+  <link rel="icon" href="./assets/icons/icon-192.png" sizes="192x192"/>
+  <link rel="apple-touch-icon" href="./assets/icons/icon-192.png"/>
+
+  <link rel="stylesheet" href="./styles.css"/>
+  <title>Loquendo Studio — PWA</title>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <div class="logoDot"></div>
+      <div>
+        <div class="brandTitle">Loquendo Studio</div>
+        <div class="brandSub">PWA · Gratis · GitHub Pages · Sin APIs</div>
+      </div>
+    </div>
+
+    <div class="topActions">
+      <button id="btnInstall" class="btn ghost" hidden>Instalar</button>
+      <button id="btnUpdateSW" class="btn ghost" hidden>Actualizar</button>
+      <a class="btn ghost" href="https://x.com/intent/tweet" target="_blank" rel="noreferrer">X</a>
+    </div>
+  </header>
+
+  <main class="layout">
+    <section class="panel">
+      <div class="panelHead">
+        <h2>Guion</h2>
+        <div class="row gap">
+          <input id="inpTitle" class="input" placeholder="Título del vídeo (ej: 🚨 ÚLTIMA HORA…)" maxlength="90"/>
+          <button id="btnAuto" class="btn">Pro</button>
+        </div>
+      </div>
+
+      <div class="panelBody">
+        <textarea id="txtScript" class="textarea" spellcheck="false" placeholder="Escribe aquí el texto.
+Tips:
+- Usa [PAUSA=400] para pausas (ms).
+- Usa líneas cortas para subtítulos más limpios.
+- Evita párrafos enormes."></textarea>
+
+        <div class="chips">
+          <button class="chip" data-insert="[PAUSA=300]">+ Pausa 300ms</button>
+          <button class="chip" data-insert="[PAUSA=600]">+ Pausa 600ms</button>
+          <button class="chip" data-insert="🚨 ÚLTIMA HORA: ">+ Plantilla</button>
+          <button class="chip" data-insert="#ENVIVO ">+ Hashtag</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="panelHead">
+        <h2>Voz</h2>
+        <div class="row gap">
+          <select id="selVoice" class="select"></select>
+          <select id="selLang" class="select">
+            <option value="auto">Auto</option>
+            <option value="es">es</option>
+            <option value="en">en</option>
+            <option value="pt">pt</option>
+            <option value="fr">fr</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="panelBody">
+        <div class="grid3">
+          <div class="field">
+            <label>Velocidad</label>
+            <input id="rngRate" type="range" min="0.6" max="1.5" step="0.05" value="1"/>
+            <div class="mini" id="lblRate">1.00</div>
+          </div>
+          <div class="field">
+            <label>Tono</label>
+            <input id="rngPitch" type="range" min="0.6" max="1.5" step="0.05" value="1"/>
+            <div class="mini" id="lblPitch">1.00</div>
+          </div>
+          <div class="field">
+            <label>Volumen</label>
+            <input id="rngVol" type="range" min="0" max="1" step="0.05" value="1"/>
+            <div class="mini" id="lblVol">1.00</div>
+          </div>
+        </div>
+
+        <div class="row gap wrap">
+          <button id="btnSpeak" class="btn">▶ Previsualizar</button>
+          <button id="btnStopSpeak" class="btn ghost">⏹ Parar</button>
+          <button id="btnRecordSpeak" class="btn accent">🎙 Grabar loquendo (audio pestaña)</button>
+        </div>
+
+        <div class="hint">
+          Para grabar: tu navegador te pedirá “compartir pantalla”. Elige <b>esta pestaña</b> y activa <b>compartir audio</b>.
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="row gap wrap">
+          <input id="fileAudio" type="file" accept="audio/*" class="file"/>
+          <button id="btnClearAudio" class="btn ghost">Quitar audio</button>
+        </div>
+
+        <audio id="audioPlayer" class="audio" controls></audio>
+        <div class="mini" id="audioMeta">Audio: —</div>
+      </div>
+    </section>
+
+    <section class="panel wide">
+      <div class="panelHead">
+        <h2>Vídeo</h2>
+        <div class="row gap">
+          <select id="selFormat" class="select">
+            <option value="9x16">Vertical 9:16 (1080×1920)</option>
+            <option value="16x9">Horizontal 16:9 (1920×1080)</option>
+            <option value="1x1">Cuadrado 1:1 (1080×1080)</option>
+          </select>
+          <select id="selStyle" class="select">
+            <option value="news">Newsroom</option>
+            <option value="clean">Clean</option>
+            <option value="neon">Neon</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="panelBody">
+        <div class="row gap wrap">
+          <label class="toggle">
+            <input id="chkCaptions" type="checkbox" checked/>
+            <span>Subtítulos</span>
+          </label>
+          <label class="toggle">
+            <input id="chkWatermark" type="checkbox" checked/>
+            <span>Watermark</span>
+          </label>
+          <label class="toggle">
+            <input id="chkProAudio" type="checkbox" checked/>
+            <span>Audio “pro”</span>
+          </label>
+          <label class="toggle">
+            <input id="chkMp4" type="checkbox"/>
+            <span>Convertir a MP4 (más lento)</span>
+          </label>
+        </div>
+
+        <div class="row gap wrap">
+          <input id="fileBg" type="file" accept="image/*" class="file"/>
+          <input id="inpAccent" type="color" class="color" value="#5cc8ff"/>
+          <button id="btnRender" class="btn accent">🎬 Generar vídeo</button>
+          <button id="btnAbort" class="btn ghost" disabled>Cancelar</button>
+        </div>
+
+        <div class="renderGrid">
+          <div class="previewBox">
+            <canvas id="cnv" class="canvas"></canvas>
+            <div class="mini" id="renderMeta">Listo.</div>
+          </div>
+
+          <div class="outBox">
+            <video id="vidOut" class="video" controls playsinline></video>
+            <div class="row gap wrap">
+              <a id="lnkDownload" class="btn" download="loquendo_video.webm" href="#" aria-disabled="true">⬇ Descargar</a>
+              <button id="btnShare" class="btn ghost" disabled>Compartir</button>
+            </div>
+            <div class="hint">
+              En X no se puede adjuntar vídeo desde enlace automáticamente sin API. Aquí: descargas + abres X con texto prellenado.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel wide">
+      <div class="panelHead">
+        <h2>Publicar en X (sin API)</h2>
+        <div class="row gap">
+          <button id="btnGenTweet" class="btn">Generar texto</button>
+          <button id="btnCopyTweet" class="btn ghost">Copiar</button>
+          <button id="btnOpenX" class="btn accent">Abrir X</button>
+        </div>
+      </div>
+
+      <div class="panelBody">
+        <div class="grid2">
+          <div class="field">
+            <label>Plantilla</label>
+            <textarea id="txtTpl" class="textarea small" spellcheck="false">🚨 ÚLTIMA HORA: {TITULO}
+
+🔴#ENVIVO >>> {RESUMEN}
+
+Fuente: {FUENTE}
+{HASHTAGS}</textarea>
+          </div>
+          <div class="field">
+            <label>Texto final</label>
+            <textarea id="txtTweet" class="textarea small" spellcheck="false" placeholder="Aquí aparecerá el texto final."></textarea>
+            <div class="mini" id="tweetCount">0/280</div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div id="toast" class="toast" hidden></div>
+
+  <script src="./app.js"></script>
+</body>
+</html>
