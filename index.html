@@ -7,6 +7,7 @@
   <meta name="theme-color" content="#0b0f1a"/>
   <meta name="description" content="PWA gratis para crear voz estilo loquendo, grabarla, exportar audio, montar vídeo con subtítulos y preparar publicación para X sin APIs."/>
   <meta name="referrer" content="strict-origin-when-cross-origin"/>
+  <meta name="loquendo-build" content="loquendo-studio-v2.1.0_2026-01-17"/>
 
   <link rel="manifest" href="./manifest.webmanifest"/>
   <link rel="icon" href="./assets/icons/icon-192.png" sizes="192x192"/>
@@ -46,14 +47,14 @@
         <textarea id="txtScript" class="textarea" spellcheck="false" placeholder="Escribe aquí el texto.
 Tips:
 - Usa [PAUSA=400] para pausas (ms).
-- Usa líneas cortas para subtítulos más limpios.
-- Evita párrafos enormes."></textarea>
+- Usa líneas cortas para subtítulos más limpios."></textarea>
 
         <div class="chips">
           <button class="chip" data-insert="[PAUSA=300]">+ Pausa 300ms</button>
           <button class="chip" data-insert="[PAUSA=600]">+ Pausa 600ms</button>
           <button class="chip" data-insert="🚨 ÚLTIMA HORA: ">+ Plantilla</button>
-          <button class="chip" data-insert="#ENVIVO ">+ Hashtag</button>
+          <button class="chip" data-insert="🔴#ENVIVO ">+ ENVIVO</button>
+          <button class="chip" data-insert="#Noticias ">+ Hashtag</button>
         </div>
       </div>
     </section>
@@ -99,7 +100,9 @@ Tips:
         </div>
 
         <div class="hint">
-          Para grabar: tu navegador pedirá “compartir pantalla”. Elige <b>esta pestaña</b> y activa <b>compartir audio</b>.
+          Para grabar: el navegador te pedirá “compartir pantalla”.
+          Elige <b>esta pestaña</b> y activa <b>Compartir audio</b>.
+          El audio <b>no se guarda solo</b>: se queda en memoria hasta que lo <b>descargas</b> o <b>guardas</b>.
         </div>
 
         <div class="divider"></div>
@@ -114,6 +117,7 @@ Tips:
 
         <div class="row gap wrap">
           <a id="lnkDownloadAudio" class="btn" download="loquendo_audio.webm" href="#" aria-disabled="true">⬇ Descargar audio</a>
+          <button id="btnSaveAudio" class="btn ghost" disabled>💾 Guardar…</button>
           <button id="btnExportWav" class="btn ghost" disabled>Exportar WAV</button>
           <button id="btnApplyFx" class="btn" disabled>✨ Aplicar FX</button>
           <button id="btnResetFx" class="btn ghost" disabled>Restaurar</button>
@@ -177,7 +181,6 @@ Tips:
 
           <div class="mini" id="voicesMeta">Voces: —</div>
         </div>
-
       </div>
     </section>
 
@@ -200,30 +203,12 @@ Tips:
 
       <div class="panelBody">
         <div class="row gap wrap">
-          <label class="toggle">
-            <input id="chkCaptions" type="checkbox" checked/>
-            <span>Subtítulos</span>
-          </label>
-          <label class="toggle">
-            <input id="chkWatermark" type="checkbox" checked/>
-            <span>Watermark</span>
-          </label>
-          <label class="toggle">
-            <input id="chkProAudio" type="checkbox" checked/>
-            <span>Audio “pro”</span>
-          </label>
-          <label class="toggle">
-            <input id="chkMp4" type="checkbox"/>
-            <span>Convertir a MP4</span>
-          </label>
-          <label class="toggle">
-            <input id="chkAutoDlAudio" type="checkbox"/>
-            <span>Auto-descargar audio</span>
-          </label>
-          <label class="toggle">
-            <input id="chkAutoDlVideo" type="checkbox"/>
-            <span>Auto-descargar vídeo</span>
-          </label>
+          <label class="toggle"><input id="chkCaptions" type="checkbox" checked/><span>Subtítulos</span></label>
+          <label class="toggle"><input id="chkWatermark" type="checkbox" checked/><span>Watermark</span></label>
+          <label class="toggle"><input id="chkProAudio" type="checkbox" checked/><span>Audio “pro”</span></label>
+          <label class="toggle"><input id="chkMp4" type="checkbox"/><span>Convertir a MP4</span></label>
+          <label class="toggle"><input id="chkAutoDlAudio" type="checkbox"/><span>Auto-descargar audio</span></label>
+          <label class="toggle"><input id="chkAutoDlVideo" type="checkbox"/><span>Auto-descargar vídeo</span></label>
         </div>
 
         <div class="row gap wrap">
@@ -247,7 +232,7 @@ Tips:
               <button id="btnShare" class="btn ghost" disabled>Compartir</button>
             </div>
             <div class="hint">
-              En X no se puede adjuntar vídeo automáticamente sin API: aquí descargas y lo subes manualmente.
+              En X no se puede adjuntar vídeo automáticamente sin API: aquí lo descargas y lo subes manualmente.
             </div>
           </div>
         </div>
@@ -268,17 +253,19 @@ Tips:
         <div class="grid2">
           <div class="field">
             <label>Plantilla</label>
-            <textarea id="txtTpl" class="textarea small" spellcheck="false">🚨 ÚLTIMA HORA: {TITULO}
+            <textarea id="txtTpl" class="textarea small" spellcheck="false">🚨 ÚLTIMA HORA
+{TITULO}
 
 🔴#ENVIVO >>> {RESUMEN}
-
 Fuente: {FUENTE}
+
 {HASHTAGS}</textarea>
           </div>
+
           <div class="field">
             <label>Texto final</label>
-            <textarea id="txtTweet" class="textarea small" spellcheck="false" placeholder="Aquí aparecerá el texto final."></textarea>
-            <div class="mini" id="tweetCount">0/280</div>
+            <textarea id="txtTweet" class="textarea small" spellcheck="false"></textarea>
+            <div class="mini"><span id="tweetCount">0/280</span></div>
           </div>
         </div>
       </div>

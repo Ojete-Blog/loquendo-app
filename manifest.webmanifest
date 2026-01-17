@@ -6,9 +6,16 @@
   "display": "standalone",
   "background_color": "#070a12",
   "theme_color": "#0b0f1a",
-  "description": "PWA gratis para crear voz tipo loquendo, grabarla, exportar audio, montar vídeos con subtítulos y preparar publicación en X sin APIs.",
   "icons": [
-    { "src": "./assets/icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
-    { "src": "./assets/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" }
+    {
+      "src": "./assets/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "./assets/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
   ]
 }
