@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
   <meta name="color-scheme" content="dark light"/>
   <meta name="theme-color" content="#0b0f1a"/>
-  <meta name="description" content="PWA gratis para crear voz estilo loquendo, grabarla, montar vídeo con subtítulos y preparar publicación para X sin APIs."/>
+  <meta name="description" content="PWA gratis para crear voz estilo loquendo, grabarla, exportar audio, montar vídeo con subtítulos y preparar publicación para X sin APIs."/>
   <meta name="referrer" content="strict-origin-when-cross-origin"/>
 
   <link rel="manifest" href="./manifest.webmanifest"/>
@@ -99,7 +99,7 @@ Tips:
         </div>
 
         <div class="hint">
-          Para grabar: tu navegador te pedirá “compartir pantalla”. Elige <b>esta pestaña</b> y activa <b>compartir audio</b>.
+          Para grabar: tu navegador pedirá “compartir pantalla”. Elige <b>esta pestaña</b> y activa <b>compartir audio</b>.
         </div>
 
         <div class="divider"></div>
@@ -111,6 +111,73 @@ Tips:
 
         <audio id="audioPlayer" class="audio" controls></audio>
         <div class="mini" id="audioMeta">Audio: —</div>
+
+        <div class="row gap wrap">
+          <a id="lnkDownloadAudio" class="btn" download="loquendo_audio.webm" href="#" aria-disabled="true">⬇ Descargar audio</a>
+          <button id="btnExportWav" class="btn ghost" disabled>Exportar WAV</button>
+          <button id="btnApplyFx" class="btn" disabled>✨ Aplicar FX</button>
+          <button id="btnResetFx" class="btn ghost" disabled>Restaurar</button>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="panelMini">
+          <div class="row gap wrap">
+            <select id="selFx" class="select">
+              <option value="none">FX: Ninguno</option>
+              <option value="loquendo">FX: Loquendo (clásico)</option>
+              <option value="radio">FX: Radio / AM</option>
+              <option value="megaphone">FX: Megáfono</option>
+              <option value="dark">FX: Oscuro / Grave</option>
+              <option value="bright">FX: Brillante / Agudo</option>
+              <option value="clean">FX: Limpio / Pro</option>
+            </select>
+
+            <label class="toggle">
+              <input id="chkFxOn" type="checkbox" checked/>
+              <span>Usar FX en vídeo</span>
+            </label>
+          </div>
+
+          <div class="grid3">
+            <div class="field">
+              <label>Drive</label>
+              <input id="rngFxDrive" type="range" min="0" max="1" step="0.01" value="0.25"/>
+              <div class="mini" id="lblFxDrive">0.25</div>
+            </div>
+            <div class="field">
+              <label>Claridad</label>
+              <input id="rngFxClarity" type="range" min="0" max="1" step="0.01" value="0.45"/>
+              <div class="mini" id="lblFxClarity">0.45</div>
+            </div>
+            <div class="field">
+              <label>Reverb</label>
+              <input id="rngFxReverb" type="range" min="0" max="1" step="0.01" value="0.10"/>
+              <div class="mini" id="lblFxReverb">0.10</div>
+            </div>
+          </div>
+
+          <div class="grid3">
+            <div class="field">
+              <label>Bajos</label>
+              <input id="rngFxBass" type="range" min="0" max="1" step="0.01" value="0.30"/>
+              <div class="mini" id="lblFxBass">0.30</div>
+            </div>
+            <div class="field">
+              <label>Air (agudos)</label>
+              <input id="rngFxAir" type="range" min="0" max="1" step="0.01" value="0.25"/>
+              <div class="mini" id="lblFxAir">0.25</div>
+            </div>
+            <div class="field">
+              <label>Compresión</label>
+              <input id="rngFxComp" type="range" min="0" max="1" step="0.01" value="0.55"/>
+              <div class="mini" id="lblFxComp">0.55</div>
+            </div>
+          </div>
+
+          <div class="mini" id="voicesMeta">Voces: —</div>
+        </div>
+
       </div>
     </section>
 
@@ -147,7 +214,15 @@ Tips:
           </label>
           <label class="toggle">
             <input id="chkMp4" type="checkbox"/>
-            <span>Convertir a MP4 (más lento)</span>
+            <span>Convertir a MP4</span>
+          </label>
+          <label class="toggle">
+            <input id="chkAutoDlAudio" type="checkbox"/>
+            <span>Auto-descargar audio</span>
+          </label>
+          <label class="toggle">
+            <input id="chkAutoDlVideo" type="checkbox"/>
+            <span>Auto-descargar vídeo</span>
           </label>
         </div>
 
@@ -155,6 +230,7 @@ Tips:
           <input id="fileBg" type="file" accept="image/*" class="file"/>
           <input id="inpAccent" type="color" class="color" value="#5cc8ff"/>
           <button id="btnRender" class="btn accent">🎬 Generar vídeo</button>
+          <button id="btnOneClick" class="btn accent">🚀 1-Click: Grabar→FX→Vídeo→X</button>
           <button id="btnAbort" class="btn ghost" disabled>Cancelar</button>
         </div>
 
@@ -171,7 +247,7 @@ Tips:
               <button id="btnShare" class="btn ghost" disabled>Compartir</button>
             </div>
             <div class="hint">
-              En X no se puede adjuntar vídeo desde enlace automáticamente sin API. Aquí: descargas + abres X con texto prellenado.
+              En X no se puede adjuntar vídeo automáticamente sin API: aquí descargas y lo subes manualmente.
             </div>
           </div>
         </div>

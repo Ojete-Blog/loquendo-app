@@ -1,6 +1,6 @@
 "use strict";
 
-const CACHE = "loquendo-studio-v1";
+const CACHE = "loquendo-studio-v2";
 const SHELL = [
   "./",
   "./index.html",
@@ -36,13 +36,10 @@ self.addEventListener("fetch", (event) => {
   if(req.method !== "GET") return;
 
   const url = new URL(req.url);
-
-  // GitHub Pages: misma origin
   if(url.origin !== location.origin) return;
 
   const isHTML = req.headers.get("accept")?.includes("text/html");
 
-  // HTML: network-first para no quedarte con versiones viejas
   if(isHTML){
     event.respondWith((async () => {
       try{
@@ -58,7 +55,6 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  // Assets: cache-first con fallback a red
   event.respondWith((async () => {
     const cached = await caches.match(req);
     if(cached) return cached;
